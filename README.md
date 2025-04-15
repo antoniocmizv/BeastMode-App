@@ -24,7 +24,7 @@ Este es el backend del proyecto BeastMode, desarrollado con Node.js, Express y P
 1. Clona este repositorio:
 
    ```bash
-   git clone [<URL_DEL_REPOSITORIO>](https://github.com/antoniocmizv/BeastMode-App.git)
+   git clone (https://github.com/antoniocmizv/BeastMode-App.git)
    cd beastmode-backend
    ```
 
