@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String           @id @default(uuid())
+  name        String
+  email       String           @unique
+  password    String
+  role        UserRole         @default(USER)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  gym         Gym?             @relation(fields: [gymId], references: [id])
+  gymId       String?
+  subscriptions Subscription[]
+  classes     ClassEnrollment[]
+}
+
+model Gym {
+  id        String   @id @default(uuid())
+  name      String
+  address   String 
+  users     User[]
+  classes   Class[]
+}
+
+model Class {
+  id         String            @id @default(uuid())
+  name       String
+  description String?
+  startTime  DateTime
+  endTime    DateTime
+  maxUsers   Int
+  gymId      String
+  gym        Gym               @relation(fields: [gymId], references: [id])
+  enrollments ClassEnrollment[]
+}
+
+model ClassEnrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  classId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  class     Class    @relation(fields: [classId], references: [id])
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  userId    String
+  planName  String
+  price     Float
+  isActive  Boolean  @default(true)
+  startDate DateTime
+  endDate   DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum UserRole {
+  USER
+  TRAINER
+  ADMIN
+}

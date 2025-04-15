@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: beastuser
+      POSTGRES_PASSWORD: beastpass
+      POSTGRES_DB: beastmode
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+   
+
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+      - "5555:5555" 
+    environment:
+      - DOTENV_CONFIG_PATH=.env.docker
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/app
+    command: ["npm", "run", "dev"]
+
+volumes:
+  pgdata:
