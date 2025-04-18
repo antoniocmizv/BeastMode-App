@@ -17,6 +17,7 @@ declare global {
 }
 
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
+  console.log('[DEBUG] Middleware authenticate ejecutado'); // Agrega este log
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ message: 'Token no proporcionado' });
@@ -27,9 +28,11 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 
   try {
     const payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    console.log('[DEBUG] Payload decodificado:', payload); // Agrega este log
     req.user = payload;
     next();
   } catch (err) {
+    console.error('[DEBUG] Error al verificar el token:', err); // Agrega este log
     res.status(401).json({ message: 'Token inválido o expirado' });
   }
 };
