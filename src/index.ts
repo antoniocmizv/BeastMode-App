@@ -11,6 +11,8 @@ import subscriptionRoutes from './routes/subscription.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './docs/swagger';
 
+import { errorHandler } from './middlewares/errorHandler';
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -35,4 +37,6 @@ app.listen(3000, () => {
   console.log('🔥 Servidor corriendo en http://localhost:3000');
 });
 
+
+app.use(errorHandler);
 
