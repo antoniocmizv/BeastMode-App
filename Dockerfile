@@ -6,11 +6,12 @@ WORKDIR /usr/src/app
 # Copiar package.json e instalar dependencias
 COPY package*.json ./
 RUN npm install
-RUN npx prisma generate 
+
 
 # Copiar el resto del código
 COPY . .
 
+RUN npx prisma generate 
 # Compilar TypeScript
 RUN npm run build
 

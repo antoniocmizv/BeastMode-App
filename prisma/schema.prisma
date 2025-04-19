@@ -19,6 +19,9 @@ model User {
   gymId       String?
   subscriptions Subscription[]
   classes     ClassEnrollment[]
+
+  chats     Chat[]   @relation("ChatUsers")
+  messages  Message[]
 }
 
 model Gym {
@@ -27,6 +30,7 @@ model Gym {
   address   String 
   users     User[]
   classes   Class[]
+  chats     Chat[]   @relation("GymChats")
 }
 
 model Class {
@@ -65,4 +69,32 @@ enum UserRole {
   USER
   TRAINER
   ADMIN
+}
+
+
+enum ChatType {
+  GYM
+  PRIVATE
+  TRAINER
+}
+
+model Chat {
+  id        String    @id @default(uuid())
+  type      ChatType
+  name      String?   // solo para GYM
+  gymId     String? 
+  gym       Gym?      @relation("GymChats", fields: [gymId], references: [id]) 
+  users     User[]    @relation("ChatUsers")
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  createdAt DateTime @default(now())
 }
