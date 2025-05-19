@@ -11,6 +11,9 @@ import classRoutes from './routes/class.routes';
 import subscriptionRoutes from './routes/subscription.routes';
 import chatRoutes from './routes/chat.routes';
 import messageRoutes from './routes/message.routes';
+import aiRoutes from './routes/ai.routes';
+
+
 
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './docs/swagger';
@@ -30,6 +33,7 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/ia', aiRoutes);
 
 app.get('/', (_req, res) => {
   res.send('🏋️ BeastMode API funcionando');
