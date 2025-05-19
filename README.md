@@ -31,8 +31,8 @@ Este es el backend del proyecto BeastMode, desarrollado con Node.js, Express y P
 2. Crea un archivo `.env` en la raíz del proyecto con las siguientes variables de entorno:
 
    ```env
-   JWT_SECRET=supersecret
-   DATABASE_URL=postgresql://beastuser:beastpass@db:5432/beastmode
+      DATABASE_URL="postgresql://beastuser:beastpass@db:5432/beastmode"
+      JWT_SECRET=supersecret
    ```
 
 3. Construye y levanta los contenedores:
