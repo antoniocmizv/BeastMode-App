@@ -1,12 +1,13 @@
 FROM node:18
 
+ENV NODE_ENV=development  
+
 # Crear directorio app
 WORKDIR /usr/src/app
 
 # Copiar package.json e instalar dependencias
 COPY package*.json ./
 RUN npm install
-
 
 # Copiar el resto del código
 COPY . .
@@ -19,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Comando por defecto
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "dev"]
