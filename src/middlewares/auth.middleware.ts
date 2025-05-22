@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 interface JwtPayload {
   id: string;
   role: string;
+  gymId?: string;
 }
 
 declare global {

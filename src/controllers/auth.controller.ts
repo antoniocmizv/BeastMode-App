@@ -5,10 +5,10 @@ import { generateToken } from '../utils/jwt';
 
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, gymId } = req.body;
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
- 
+
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -18,10 +18,11 @@ export const register = async (req: Request, res: Response, next: NextFunction):
         email,
         password: hashed,
         role: 'USER',
+        gymId,
       },
     });
 
-    const token = generateToken({ id: user.id, role: user.role });
+    const token = generateToken({ id: user.id, role: user.role, gymId: user.gymId });
 
     res.status(201).json({ user: { id: user.id, email: user.email }, token });
   } catch (error) {
@@ -32,7 +33,16 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { email, password } = req.body;
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        role: true,
+        gymId: true, 
+      },
+    });
 
     if (!user) {
       res.status(404).json({ message: 'User not found' });
@@ -45,7 +55,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       return;
     }
 
-    const token = generateToken({ id: user.id, role: user.role });
+    const token = generateToken({ id: user.id, role: user.role, gymId: user.gymId });
 
     res.json({ user: { id: user.id, email: user.email }, token });
   } catch (error) {

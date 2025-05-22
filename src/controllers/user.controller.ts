@@ -26,6 +26,13 @@ export const getMe: RequestHandler = async (req, res) => {
         role: true,
         createdAt: true,
         updatedAt: true,
+        gym: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+          },
+        },
       },
     });
 
