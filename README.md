@@ -123,6 +123,74 @@ Este es el backend del proyecto BeastMode, desarrollado con Node.js, Express y P
 - `PUT /api/subscriptions/:id`
 - `DELETE /api/subscriptions/:id`
 
+## Endpoints de la API
+
+### Chats
+- `GET /api/chats`  
+  Obtiene todos los chats en los que participa el usuario autenticado.  
+  Seguridad: Bearer token en header `Authorization: Bearer <token>`.
+
+- `GET /api/chats/{chatId}`  
+  Obtiene los detalles de un chat por su ID (usuarios y configuración).  
+  Parámetros de ruta:  
+    • `chatId` (string) – ID del chat.  
+  Seguridad: Bearer token.
+
+- `POST /api/chats`  
+  Crea un nuevo chat especificando usuarios y tipo.  
+  Body (application/json):  
+  ```json
+  {
+    "userIds": ["idUsuario1", "idUsuario2", ...],
+    "type": "GYM" | "PRIVATE" | "TRAINER",
+    "gymId": "idGimnasio" // obligatorio solo si type = "GYM"
+  }
+  ```
+  Respuesta: objeto del chat creado (incluye usuarios).  
+  Seguridad: Bearer token.
+
+- `GET /api/chats/{chatId}/messages`  
+  Obtiene todos los mensajes de un chat, ordenados por fecha ascendente.  
+  Parámetros de ruta:  
+    • `chatId` (string) – ID del chat.  
+  Seguridad: Bearer token.
+
+## WebSocket (Socket.IO)
+Para mensajería en tiempo real, conecta tu cliente a  
+```
+ws://localhost:3000
+```  
+Eventos:
+- `join-chat`  
+  Payload: `{ chatId: string }`  
+  El cliente se une a la sala identificada por `chatId`.
+
+- `send-message`  
+  Payload:  
+  ```json
+  {
+    "chatId": "idDelChat",
+    "senderId": "idUsuarioEmisor",
+    "content": "Texto del mensaje"
+  }
+  ```  
+  Envía un mensaje al servidor.
+
+- `receive-message`  
+  Evento emitido por el servidor a todos los clientes en la sala:  
+  Payload:  
+  ```json
+  {
+    "id": "idMensaje",
+    "content": "Texto del mensaje",
+    "senderId": "idUsuarioEmisor",
+    "chatId": "idDelChat",
+    "createdAt": "2025-05-25T12:34:56.789Z"
+  }
+  ```
+
+
+
 ## Prisma & Base de Datos
 
 - Abrir Prisma Studio:
