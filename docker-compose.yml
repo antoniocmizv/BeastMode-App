@@ -15,9 +15,13 @@ services:
     build: .
     ports:
       - "3000:3000"
-      - "5555:5555"
+      - "5555:5555"    
     environment:
-      - DOTENV_CONFIG_PATH=.env.docker
+      - DATABASE_URL=postgresql://beastuser:beastpass@db:5432/beastmode
+      - JWT_SECRET=supersecret
+      - OPENROUTER_API_KEY=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
+      - OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+      - NODE_ENV=development
     depends_on:
       - db
     volumes:
