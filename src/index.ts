@@ -89,10 +89,37 @@ io.on('connection', (socket) => {
   socket.on('send-message', async ({ chatId, content }: { chatId: string; content: string }) => {
     try {
       const senderId = socket.data.userId as string;
+      // Crear el mensaje
       const message = await prisma.message.create({
         data: { chatId, senderId, content },
+        include: { sender: { select: { id: true, name: true } } },
       });
-      io.to(chatId).emit('receive-message', message);
+      // Obtener usuarios del chat
+      const chat = await prisma.chat.findUnique({
+        where: { id: chatId },
+        include: { users: { select: { id: true } } },
+      });
+      if (!chat) return;
+      // Crear registros MessageRead (leído para emisor, no leído para receptores)
+      await prisma.$transaction(
+        (chat.users as { id: string }[]).map((u) =>
+          prisma.messageRead.create({
+            data: {
+              messageId: message.id,
+              userId: u.id,
+              readAt: u.id === senderId ? new Date() : null,
+            },
+          })
+        )
+      );
+      // Emitir solo a los receptores
+      chat.users.forEach((u: { id: string }) => {
+        if (u.id !== senderId) {
+          socket.to(u.id).emit('receive-message', message);
+        }
+      });
+      // Opcional: emitir al emisor también si lo deseas
+      socket.emit('receive-message', message);
     } catch (err) {
       console.error('[ERROR]', err);
     }

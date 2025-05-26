@@ -23,6 +23,8 @@ model User {
 
   chats     Chat[]   @relation("ChatUsers")
   messages  Message[]
+  messageReads MessageRead[]
+  chatDeletes ChatDelete[]
 }
 
 model Gym {
@@ -89,6 +91,7 @@ model Chat {
   users     User[]    @relation("ChatUsers")
   messages  Message[]
   createdAt DateTime  @default(now())
+  chatDeletes ChatDelete[]
 }
 
 model Message {
@@ -99,6 +102,17 @@ model Message {
   chatId    String
   chat      Chat     @relation(fields: [chatId], references: [id])
   createdAt DateTime @default(now())
+  reads     MessageRead[]
+}
+
+model MessageRead {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  readAt    DateTime?
+  message   Message  @relation(fields: [messageId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  @@unique([messageId, userId])
 }
 
 model GymAccess {
@@ -113,4 +127,14 @@ model GymAccess {
   
   user      User     @relation(fields: [userId], references: [id])
   gym       Gym      @relation(fields: [gymId], references: [id])
+}
+
+model ChatDelete {
+  id      String @id @default(uuid())
+  chatId  String
+  userId  String
+  deletedAt DateTime @default(now())
+  chat    Chat   @relation(fields: [chatId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+  @@unique([chatId, userId])
 }
