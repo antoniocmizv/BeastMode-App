@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import http from 'http';
 import { Server } from 'socket.io';
+import { verifyToken } from './utils/jwt'; // ajusta la ruta si es necesaria
+import { JwtPayload } from './middlewares/auth.middleware'; 
 
 import authRoutes from './routes/auth.routes';
 import profileRoutes from './routes/profile.routes';
@@ -60,24 +62,38 @@ const io = new Server(server, {
   },
 });
 
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token as string | undefined;
+  if (!token) return next(new Error('Auth token missing'));
+  try {
+    const payload = verifyToken<JwtPayload>(token);
+    socket.data.userId = payload.id;
+    next();
+  } catch {
+    next(new Error('Invalid token'));
+  }
+});
+
 io.on('connection', (socket) => {
   console.log(`🔌 Usuario conectado: ${socket.id}`);
 
+  // 2. Unir a la sala con string puro
   socket.on('join-chat', (chatId: string) => {
     socket.join(chatId);
     console.log(`🟢 Usuario ${socket.id} se unió a chat ${chatId}`);
   });
 
-  socket.on('send-message', async ({ chatId, senderId, content }) => {
-    const message = await prisma.message.create({
-      data: {
-        chatId,
-        senderId,
-        content,
-      },
-    });
-
-    io.to(chatId).emit('receive-message', message);
+  // 3. Usar socket.data.userId como senderId
+  socket.on('send-message', async ({ chatId, content }: { chatId: string; content: string }) => {
+    try {
+      const senderId = socket.data.userId as string;
+      const message = await prisma.message.create({
+        data: { chatId, senderId, content },
+      });
+      io.to(chatId).emit('receive-message', message);
+    } catch (err) {
+      console.error('[ERROR]', err);
+    }
   });
 
   socket.on('disconnect', () => {
