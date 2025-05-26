@@ -262,6 +262,143 @@ const swaggerDocument = {
               },
             },
           },
+        },      },
+      '/qr/generate': {
+        post: {
+          summary: 'Generar QR para acceso al gimnasio',
+          tags: ['QR Access'],
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    gymId: { type: 'string' },
+                  },
+                  required: ['gymId'],
+                },
+              },
+            },
+          },
+          responses: {
+            '200': { 
+              description: 'QR generado exitosamente',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      qrToken: { type: 'string' },
+                      expiresAt: { type: 'string', format: 'date-time' },
+                      gymAccess: { $ref: '#/components/schemas/GymAccess' },
+                    },
+                  },
+                },
+              },
+            },
+            '403': { description: 'Sin suscripción activa o acceso al gimnasio' },
+          },
+        },
+      },
+      '/qr/validate': {
+        post: {
+          summary: 'Validar QR en la entrada (ADMIN/TRAINER)',
+          tags: ['QR Access'],
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    qrToken: { type: 'string' },
+                  },
+                  required: ['qrToken'],
+                },
+              },
+            },
+          },
+          responses: {
+            '200': { 
+              description: 'Acceso autorizado',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      message: { type: 'string' },
+                      user: { $ref: '#/components/schemas/User' },
+                      gym: { $ref: '#/components/schemas/Gym' },
+                      accessTime: { type: 'string', format: 'date-time' },
+                    },
+                  },
+                },
+              },
+            },
+            '400': { description: 'QR inválido, usado o expirado' },
+            '404': { description: 'QR no encontrado' },
+          },
+        },
+      },
+      '/qr/history': {
+        get: {
+          summary: 'Obtener historial de accesos del usuario',
+          tags: ['QR Access'],
+          security: [{ bearerAuth: [] }],
+          responses: {
+            '200': { 
+              description: 'Historial de accesos',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/GymAccess' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/qr/stats/{gymId}': {
+        get: {
+          summary: 'Obtener estadísticas de acceso del gimnasio (ADMIN/TRAINER)',
+          tags: ['QR Access'],
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: 'gymId',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+              description: 'ID del gimnasio',
+            },
+          ],
+          responses: {
+            '200': { 
+              description: 'Estadísticas de acceso',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      todayAccesses: { type: 'integer' },
+                      uniqueUsersToday: { type: 'integer' },
+                      totalHistoricalAccesses: { type: 'integer' },
+                      todayAccessDetails: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/GymAccess' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '403': { description: 'Sin permisos para ver estadísticas' },
+          },
         },
       },
     },
@@ -306,8 +443,7 @@ const swaggerDocument = {
             maxUsers: { type: 'integer' },
             gymId: { type: 'string' },
           },
-        },
-        Subscription: {
+        },        Subscription: {
           type: 'object',
           properties: {
             id: { type: 'string' },
@@ -317,6 +453,21 @@ const swaggerDocument = {
             isActive: { type: 'boolean' },
             startDate: { type: 'string', format: 'date-time' },
             endDate: { type: 'string', format: 'date-time' },
+          },
+        },
+        GymAccess: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            userId: { type: 'string' },
+            gymId: { type: 'string' },
+            qrToken: { type: 'string' },
+            isUsed: { type: 'boolean' },
+            expiresAt: { type: 'string', format: 'date-time' },
+            createdAt: { type: 'string', format: 'date-time' },
+            usedAt: { type: 'string', format: 'date-time', nullable: true },
+            user: { $ref: '#/components/schemas/User' },
+            gym: { $ref: '#/components/schemas/Gym' },
           },
         },
       },

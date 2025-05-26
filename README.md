@@ -99,6 +99,36 @@ Este es el backend del proyecto BeastMode, desarrollado con Node.js, Express y P
 ### Usuarios
 - `GET /api/users`  
 - `GET /api/users/:id`
+
+### Gimnasios
+- `GET /api/gyms` - Obtener todos los gimnasios
+- `POST /api/gyms` - Crear nuevo gimnasio (ADMIN)
+- `GET /api/gyms/:id` - Obtener gimnasio por ID
+
+### Clases
+- `GET /api/classes` - Obtener todas las clases
+- `POST /api/classes` - Crear nueva clase (TRAINER/ADMIN)
+
+### Suscripciones
+- `GET /api/subscriptions` - Obtener suscripciones del usuario
+
+### QR para Acceso al Gimnasio
+- `POST /api/qr/generate` - Generar QR para acceso al gimnasio
+  - Requiere: Bearer token, gymId en el body
+  - Valida suscripción activa y permisos de acceso
+  - QR expira en 5 minutos y es de un solo uso
+
+- `POST /api/qr/validate` - Validar QR en la entrada (ADMIN/TRAINER)
+  - Requiere: Bearer token, qrToken en el body
+  - Marca el QR como usado al validar exitosamente
+
+- `GET /api/qr/history` - Obtener historial de accesos del usuario
+  - Requiere: Bearer token
+  - Devuelve todos los accesos históricos del usuario
+
+- `GET /api/qr/stats/:gymId` - Estadísticas de acceso del gimnasio (ADMIN/TRAINER)
+  - Requiere: Bearer token y rol ADMIN/TRAINER
+  - Devuelve estadísticas del día actual y totales históricos
 - `PUT /api/users/:id`  
 - `DELETE /api/users/:id`
 

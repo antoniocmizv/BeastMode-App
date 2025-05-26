@@ -46,14 +46,20 @@ export const getChatById = async (req: Request, res: Response) => {
 
 export const createChat = async (req: Request, res: Response) => {
   try {
-    const { userIds, type, gymId } = req.body;
+    const { userIds = [], type, gymId } = req.body;
+    const creatorId = req.user!.id;
+
+    // Asegurar que el creador esté incluido en la lista de usuarios
+    const connectIds = userIds.includes(creatorId) 
+      ? userIds 
+      : [...userIds, creatorId];
 
     const newChat = await prisma.chat.create({
       data: {
         type,
         gymId,
         users: {
-          connect: userIds.map((id: string) => ({ id })),
+          connect: connectIds.map((id: string) => ({ id })),
         },
       },
       include: {

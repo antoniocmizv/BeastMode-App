@@ -19,6 +19,7 @@ model User {
   gymId       String?
   subscriptions Subscription[]
   classes     ClassEnrollment[]
+  gymAccesses GymAccess[]
 
   chats     Chat[]   @relation("ChatUsers")
   messages  Message[]
@@ -31,6 +32,7 @@ model Gym {
   users     User[]
   classes   Class[]
   chats     Chat[]   @relation("GymChats")
+  gymAccesses GymAccess[]
 }
 
 model Class {
@@ -97,4 +99,18 @@ model Message {
   chatId    String
   chat      Chat     @relation(fields: [chatId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model GymAccess {
+  id        String   @id @default(uuid())
+  userId    String
+  gymId     String
+  qrToken   String   @unique
+  isUsed    Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  usedAt    DateTime?
+  
+  user      User     @relation(fields: [userId], references: [id])
+  gym       Gym      @relation(fields: [gymId], references: [id])
 }

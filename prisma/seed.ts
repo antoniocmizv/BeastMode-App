@@ -40,12 +40,10 @@ async function createGymWithUsersAndClasses() {
                     { name: 'Mensual', duration: 30, price: 29.99 },
                     { name: 'Trimestral', duration: 90, price: 79.99 },
                     { name: 'Anual', duration: 365, price: 249.99 },
-                ];
-
-                const selectedPlan = faker.helpers.arrayElement(planTypes);
+                ];                const selectedPlan = faker.helpers.arrayElement(planTypes);
                 const startDate = faker.date.recent({ days: 10 });
                 const endDate = new Date(startDate.getTime() + selectedPlan.duration * 24 * 60 * 60 * 1000);
-
+                
                 await prisma.subscription.create({
                     data: {
                         userId: user.id,
@@ -56,6 +54,8 @@ async function createGymWithUsersAndClasses() {
                         endDate,
                     },
                 });
+
+                console.log(`💳 Suscripción ${selectedPlan.name} creada para ${user.name}`);
             }
 
             users.push(user);
@@ -88,6 +88,7 @@ async function createGymWithUsersAndClasses() {
 }
 
 async function main() {
+    await prisma.gymAccess.deleteMany();
     await prisma.classEnrollment.deleteMany();
     await prisma.class.deleteMany();
     await prisma.subscription.deleteMany();
