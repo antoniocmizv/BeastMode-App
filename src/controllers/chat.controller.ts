@@ -111,14 +111,25 @@ export const createChat: RequestHandler = async (req, res) => {
 export const getMessagesFromChat: RequestHandler = async (req, res) => {
   try {
     const { chatId } = req.params;
+    const userId = req.user?.id;
     const messages = await prisma.message.findMany({
       where: { chatId },
       orderBy: { createdAt: 'asc' },
       include: {
         sender: { select: { id: true, name: true } },
+        reads: true,
       },
     });
-    res.json(messages);
+    // Agregar estado de lectura para el usuario autenticado
+    const messagesWithRead = messages.map((msg: any) => {
+      const read = msg.reads.find((r: any) => r.userId === userId);
+      return {
+        ...msg,
+        isRead: !!read?.readAt,
+        readAt: read?.readAt || null,
+      };
+    });
+    res.json(messagesWithRead);
   } catch (err) {
     res.status(500).json({ message: 'Error al obtener los mensajes', error: err });
   }
