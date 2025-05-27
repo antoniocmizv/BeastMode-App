@@ -222,7 +222,28 @@ export const deleteChatForUser: RequestHandler = async (req, res) => {
         userId
       }
     });
-    res.json({ message: 'Chat eliminado de tu lista.' });
+    // Eliminar primero los MessageRead de los mensajes enviados por el usuario en este chat
+    const mensajesUsuario = await prisma.message.findMany({
+      where: {
+        chatId,
+        senderId: userId
+      },
+      select: { id: true }
+    });
+    const mensajesIds = mensajesUsuario.map((m: { id: string }) => m.id);
+    if (mensajesIds.length > 0) {
+      await prisma.messageRead.deleteMany({
+        where: {
+          messageId: { in: mensajesIds }
+        }
+      });
+      await prisma.message.deleteMany({
+        where: {
+          id: { in: mensajesIds }
+        }
+      });
+    }
+    res.json({ message: 'Chat eliminado de tu lista y mensajes enviados por ti eliminados.' });
   } catch (err) {
     res.status(500).json({ message: 'Error al eliminar el chat', error: err });
   }
