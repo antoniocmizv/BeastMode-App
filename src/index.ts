@@ -87,6 +87,12 @@ io.on('connection', (socket) => {
     console.log(`🟢 Usuario ${socket.id} se unió a chat ${chatId}`);
   });
 
+  // 2.1. Unir a la sala personal del usuario
+  socket.on('join-user', (userId: string) => {
+    socket.join(userId);
+    console.log(`Usuario ${socket.id} se unió a su sala personal ${userId}`);
+  });
+
   // 3. Usar socket.data.userId como senderId
   socket.on('send-message', async ({ chatId, content }: { chatId: string; content: string }) => {
     try {
