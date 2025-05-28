@@ -58,9 +58,9 @@ export const getMe: RequestHandler = async (req, res) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password, role, gymId } = req.body;
+  const { name, email, password, phone, role, gymId } = req.body;
   const user = await prisma.user.create({
-    data: { name, email, password, role, gymId },
+    data: { name, email, password, phone, role, gymId },
   });
   res.status(201).json(user);
 };
@@ -85,7 +85,8 @@ export const getUserByEmail = async (req: Request, res: Response) => {
   const { email } = req.params;
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return res.status(404).json({ message: 'Usuario no encontrado' });
+    res.status(404).json({ message: 'Usuario no encontrado' });
+    return;
   }
   res.json(user);
 };
@@ -94,7 +95,8 @@ export const getUserByGymId = async (req: Request, res: Response) => {
   const { gymId } = req.params;
   const users = await prisma.user.findMany({ where: { gymId } });
   if (users.length === 0) {
-    return res.status(404).json({ message: 'No se encontraron usuarios para este gimnasio' });
+    res.status(404).json({ message: 'No se encontraron usuarios para este gimnasio' });
+    return;
   }
   res.json(users);
 };

@@ -5,7 +5,7 @@ import { generateToken } from '../utils/jwt';
 
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, email, password, gymId } = req.body;
+    const { name, email, password, phone, gymId } = req.body;
     const existingUser = await prisma.user.findUnique({ where: { email } });
     const hashed = await bcrypt.hash(password, 10);
 
@@ -14,6 +14,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
         name,
         email,
         password: hashed,
+        phone,
         role: 'USER',
         gymId,
       },

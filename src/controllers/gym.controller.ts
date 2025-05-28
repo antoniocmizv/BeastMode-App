@@ -64,7 +64,8 @@ export const getGymById = async (req: Request, res: Response) => {
   });
 
   if (!gym) {
-    return res.status(404).json({ message: 'Gimnasio no encontrado' });
+    res.status(404).json({ message: 'Gimnasio no encontrado' });
+    return;
   }
 
   res.json(gym);

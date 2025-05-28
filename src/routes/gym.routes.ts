@@ -1,5 +1,12 @@
 import { Router } from 'express';
-import { getGyms, createGym, deleteGym } from '../controllers/gym.controller';
+import { 
+  getGyms, 
+  createGym, 
+  deleteGym, 
+  updateGym, 
+  getGymById, 
+  getGymIds 
+} from '../controllers/gym.controller';
 import { authenticate } from '../middlewares/auth.middleware';
 import { authorize } from '../middlewares/role.middleware';
 import { createGymValidator } from '../validators/gym.validator';
@@ -7,14 +14,14 @@ import { validateRequest } from '../middlewares/validateRequest';
 
 const router = Router();
 
-// Ruta pública
+// Rutas públicas
 router.get('/', getGyms);
+router.get('/ids', getGymIds);
+router.get('/:id', getGymById);
 
-// Ruta protegida (solo ADMIN puede crear gimnasios)
+// Rutas protegidas (solo ADMIN)
 router.post('/', authenticate, authorize('ADMIN'), createGymValidator, validateRequest, createGym);
-
-// Ruta protegida (solo ADMIN puede eliminar gimnasios)
+router.put('/:id', authenticate, authorize('ADMIN'), createGymValidator, validateRequest, updateGym);
 router.delete('/:id', authenticate, authorize('ADMIN'), deleteGym);
-
 
 export default router;

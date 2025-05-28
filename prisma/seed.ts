@@ -22,13 +22,12 @@ async function createGymWithUsersAndClasses() {
         // Usuarios
         const users = [];
         for (let j = 0; j < USERS_PER_GYM; j++) {
-            const password = await bcrypt.hash('password123', 10);
-
-            const user = await prisma.user.create({
+            const password = await bcrypt.hash('password123', 10);            const user = await prisma.user.create({
                 data: {
                     name: faker.person.fullName(),
                     email: faker.internet.email(),
                     password,
+                    phone: faker.phone.number(),
                     role: j === 0 ? 'ADMIN' : 'USER',
                     gymId: gym.id,
                 },
