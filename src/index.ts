@@ -14,7 +14,6 @@ import subscriptionRoutes from './routes/subscription.routes';
 import chatRoutes from './routes/chat.routes';
 import messageRoutes from './routes/message.routes';
 import aiRoutes from './routes/ai.routes';
-import qrRoutes from './routes/qr.routes';
 import messageReadRoutes from './routes/messageRead.routes';
 
 
@@ -38,7 +37,6 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/ia', aiRoutes);
-app.use('/api/qr', qrRoutes);
 app.use('/api/message-reads', messageReadRoutes);
 
 app.get('/', (_req, res) => {
