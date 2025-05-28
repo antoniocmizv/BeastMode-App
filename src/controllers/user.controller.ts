@@ -26,6 +26,7 @@ export const getMe: RequestHandler = async (req, res) => {
         role: true,
         createdAt: true,
         updatedAt: true,
+        gymId: true, // <-- importante para el token
         gym: {
           select: {
             id: true,
@@ -41,7 +42,15 @@ export const getMe: RequestHandler = async (req, res) => {
       return;
     }
 
-    res.json(user);
+    // Generar nuevo token JWT con el estado actual del usuario
+    // Si no tiene gymId, no lo incluimos en el payload
+    const { id, role, gymId } = user;
+    const { generateToken } = await import('../utils/jwt');
+    const tokenPayload: any = { id, role };
+    if (gymId) tokenPayload.gymId = gymId;
+    const token = generateToken(tokenPayload);
+
+    res.json({ user, token });
   } catch (error) {
     console.error('Error en /me', error);
     res.status(500).json({ message: 'Error interno del servidor' });
