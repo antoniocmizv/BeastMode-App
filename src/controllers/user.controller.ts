@@ -26,7 +26,7 @@ export const getMe: RequestHandler = async (req, res) => {
         role: true,
         createdAt: true,
         updatedAt: true,
-        gymId: true, // <-- importante para el token
+        gymId: true, 
         gym: {
           select: {
             id: true,
@@ -64,3 +64,38 @@ export const createUser = async (req: Request, res: Response) => {
   });
   res.status(201).json(user);
 };
+
+export const updateUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, email, password, role, gymId } = req.body;
+  const user = await prisma.user.update({
+    where: { id },
+    data: { name, email, password, role, gymId },
+  });
+  res.json(user);
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await prisma.user.delete({ where: { id } });
+  res.status(204).send();
+};
+
+export const getUserByEmail = async (req: Request, res: Response) => {
+  const { email } = req.params;
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    return res.status(404).json({ message: 'Usuario no encontrado' });
+  }
+  res.json(user);
+};
+
+export const getUserByGymId = async (req: Request, res: Response) => {
+  const { gymId } = req.params;
+  const users = await prisma.user.findMany({ where: { gymId } });
+  if (users.length === 0) {
+    return res.status(404).json({ message: 'No se encontraron usuarios para este gimnasio' });
+  }
+  res.json(users);
+};
+
