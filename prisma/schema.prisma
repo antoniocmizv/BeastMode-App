@@ -57,8 +57,8 @@ model ClassEnrollment {
   userId    String
   classId   String
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  class     Class    @relation(fields: [classId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
@@ -69,7 +69,7 @@ model Subscription {
   isActive  Boolean  @default(true)
   startDate DateTime
   endDate   DateTime
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
@@ -101,9 +101,9 @@ model Message {
   id        String   @id @default(uuid())
   content   String
   senderId  String
-  sender    User     @relation(fields: [senderId], references: [id])
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
   chatId    String
-  chat      Chat     @relation(fields: [chatId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   reads     MessageRead[]
 }
@@ -113,8 +113,8 @@ model MessageRead {
   messageId String
   userId    String
   readAt    DateTime?
-  message   Message  @relation(fields: [messageId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([messageId, userId])
 }
 
@@ -128,8 +128,8 @@ model GymAccess {
   createdAt DateTime @default(now())
   usedAt    DateTime?
   
-  user      User     @relation(fields: [userId], references: [id])
-  gym       Gym      @relation(fields: [gymId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
 }
 
 model ChatDelete {
@@ -137,7 +137,7 @@ model ChatDelete {
   chatId  String
   userId  String
   deletedAt DateTime @default(now())
-  chat    Chat   @relation(fields: [chatId], references: [id])
-  user    User   @relation(fields: [userId], references: [id])
+  chat    Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([chatId, userId])
 }
