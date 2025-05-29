@@ -7,6 +7,7 @@
     "build": "prisma generate && tsc",
     "start": "node dist/index.js",
     "seed": "ts-node prisma/seed.ts",
+    "check-users": "ts-node scripts/check-users.ts",
     "seed:docker": "docker-compose exec backend npm run seed",
     "generate:docker": "docker-compose exec backend npx prisma generate",
     "migrate:docker": "docker-compose exec backend npx prisma migrate dev --name init",
