@@ -4,7 +4,8 @@ import {
   getClassById, 
   createClass, 
   updateClass, 
-  deleteClass 
+  deleteClass, 
+  uploadClassImageMiddleware 
 } from '../controllers/class.controller';
 import { authenticate } from '../middlewares/auth.middleware';
 import { authorize } from '../middlewares/role.middleware';
@@ -18,8 +19,8 @@ router.get('/', getClasses);
 router.get('/:id', getClassById);
 
 // Rutas protegidas (TRAINER y ADMIN)
-router.post('/', authenticate, authorize('TRAINER', 'ADMIN'), createClassValidator, validateRequest, createClass);
-router.put('/:id', authenticate, authorize('TRAINER', 'ADMIN'), createClassValidator, validateRequest, updateClass);
+router.post('/', authenticate, authorize('TRAINER', 'ADMIN'), uploadClassImageMiddleware, createClassValidator, validateRequest, createClass);
+router.put('/:id', authenticate, authorize('TRAINER', 'ADMIN'), uploadClassImageMiddleware, createClassValidator, validateRequest, updateClass);
 router.delete('/:id', authenticate, authorize('TRAINER', 'ADMIN'), deleteClass);
 
 export default router;
