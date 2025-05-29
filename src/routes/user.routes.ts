@@ -7,7 +7,9 @@ import {
   updateUser, 
   deleteUser, 
   getUserByEmail, 
-  getUserByGymId 
+  getUserByGymId,
+  uploadAvatar,
+  uploadAvatarMiddleware
 } from '../controllers/user.controller';
 import { createUserValidator } from '../validators/user.validator';
 import { validateRequest } from '../middlewares/validateRequest';
@@ -22,6 +24,7 @@ router.get('/email/:email', getUserByEmail);
 router.get('/gym/:gymId', getUserByGymId);
 router.get('/:id', getUserById);
 router.post('/', createUserValidator, validateRequest, createUser);
+router.post('/:id/avatar', authenticate, uploadAvatarMiddleware, uploadAvatar);
 router.put('/:id', authenticate, authorize('ADMIN'), updateUser);
 router.delete('/:id', authenticate, authorize('ADMIN'), deleteUser);
 

@@ -24,6 +24,7 @@ import swaggerDocument from './docs/swagger';
 
 import { errorHandler } from './middlewares/errorHandler';
 import prisma from '../lib/prisma'; 
+import path from 'path';
 
 const app = express();
 app.use(cors());
@@ -39,6 +40,9 @@ app.use('/api/chats', chatRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/ia', aiRoutes);
 app.use('/api/message-reads', messageReadRoutes);
+
+// Servir archivos estáticos de /uploads
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.get('/', (_req, res) => {
   res.send('🏋️ BeastMode API funcionando');

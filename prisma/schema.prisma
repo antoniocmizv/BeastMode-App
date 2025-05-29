@@ -22,6 +22,7 @@ model User {
   subscriptions Subscription[]
   classes     ClassEnrollment[]
   gymAccesses GymAccess[]
+  avatarUrl   String?
 
   chats     Chat[]   @relation("ChatUsers")
   messages  Message[]
