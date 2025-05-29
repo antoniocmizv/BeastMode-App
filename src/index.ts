@@ -4,6 +4,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { verifyToken } from './utils/jwt'; // ajusta la ruta si es necesaria
 import { JwtPayload } from './middlewares/auth.middleware'; 
+import { setSocketServerInstance } from './socket';
 
 import authRoutes from './routes/auth.routes';
 import profileRoutes from './routes/profile.routes';
@@ -63,6 +64,7 @@ const io = new Server(server, {
     origin: '*', // Restringir al frontend en producción
   },
 });
+setSocketServerInstance(io);
 
 io.use((socket, next) => {
   const token = socket.handshake.auth.token as string | undefined;

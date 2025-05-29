@@ -1,5 +1,6 @@
 import { Request, Response, RequestHandler } from 'express';
 import prisma from '../../lib/prisma';
+import { getSocketServerInstance } from '../socket';
 
 export const getUserChats: RequestHandler = async (req, res) => {
   try {
@@ -85,7 +86,7 @@ export const getChatById: RequestHandler = async (req, res) => {
 
 export const createChat: RequestHandler = async (req, res) => {
   try {
-    const { userIds = [], type, gymId } = req.body;
+    const { userIds = [], type, gymId, firstMessageContent } = req.body;
     const creatorId = req.user!.id;
     const connectIds = userIds.includes(creatorId) 
       ? userIds 
@@ -102,7 +103,32 @@ export const createChat: RequestHandler = async (req, res) => {
         users: true,
       },
     });
-    res.status(201).json(newChat);
+    let firstMessage = null;
+    if (firstMessageContent) {
+      firstMessage = await prisma.message.create({
+        data: {
+          chatId: newChat.id,
+          senderId: creatorId,
+          content: firstMessageContent,
+        },
+      });
+      // Emitir evento 'new-chat' al destinatario (solo para chats privados de 2 personas)
+      if (newChat.type === 'PRIVATE' && newChat.users.length === 2) {
+        const recipient = newChat.users.find((u: any) => u.id !== creatorId);
+        const sender = newChat.users.find((u: any) => u.id === creatorId);
+        if (recipient && sender) {
+          const io = getSocketServerInstance();
+          io.to(recipient.id).emit('new-chat', {
+            id: newChat.id,
+            type: newChat.type,
+            otherUserName: sender.name || '',
+            lastMessage: firstMessage.content,
+            hasUnread: true
+          });
+        }
+      }
+    }
+    res.status(201).json({ ...newChat, firstMessage });
   } catch (err) {
     res.status(500).json({ message: 'Error al crear el chat', error: err });
   }
