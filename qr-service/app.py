@@ -116,7 +116,7 @@ async def fetch_user_data(user_id: str, token: str) -> dict:
 def generate_qr_token(user_data: dict, gym_id: str) -> str:
     """Genera un token específico para el QR con expiración"""
     now = get_utc_time()  # Usar UTC para JWT (estándar)
-    expires_at = now + timedelta(hours=2)  # QR válido por 2 horas
+    expires_at = now + timedelta(minutes=15)  # QR válido por 15 minutos
     
     qr_payload = {
         "user_id": user_data["id"],
@@ -207,7 +207,7 @@ async def generate_gym_qr(
         # Generar código QR
         qr_code_base64 = create_qr_code(json.dumps(qr_data))
           # Calcular expiración en hora de España
-        spain_expires_at = (get_spain_time() + timedelta(hours=2)).isoformat()
+        spain_expires_at = (get_spain_time() + timedelta(minutes=15)).isoformat()
         
         return QRResponse(
             qr_code=qr_code_base64,
@@ -230,7 +230,7 @@ async def generate_gym_qr(
             detail=f"Error interno del servidor: {str(e)}"
         )
 
-@app.post("/validate-qr")
+@app.post("/validate-gym-qr")
 async def validate_gym_qr(
     qr_token: str,
     current_user: dict = Depends(get_current_user)
