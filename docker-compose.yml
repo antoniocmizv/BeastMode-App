@@ -22,12 +22,28 @@ services:
       - OPENROUTER_API_KEY=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
       - OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
       - NODE_ENV=development
+      - QR_SERVICE_URL=http://qr-service:8000
     depends_on:
       - db
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: ["npm", "run", "dev"]
+
+  qr-service:
+    build: 
+      context: ./qr-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - JWT_SECRET=supersecret
+      - API_BASE_URL=http://backend:3000/api
+    depends_on:
+      - backend
+    volumes:
+      - ./qr-service:/app
+    restart: unless-stopped
 
 volumes:
   pgdata:

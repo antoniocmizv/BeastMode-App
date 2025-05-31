@@ -30,9 +30,9 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 export const getMe: RequestHandler = async (req, res) => {
-  console.log('[DEBUG] Controlador getMe ejecutado'); // Agrega este log
+  console.log('[DEBUG] Controlador getMe ejecutado'); 
   try {
-    console.log('[DEBUG] req.user:', req.user); // Verifica si req.user tiene datos
+    console.log('[DEBUG] req.user:', req.user); 
     const user = await prisma.user.findUnique({
       where: { id: req.user?.id },
       select: {
