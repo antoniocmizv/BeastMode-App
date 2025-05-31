@@ -50,6 +50,7 @@ model Class {
   gymId      String
   gym        Gym               @relation(fields: [gymId], references: [id])
   enrollments ClassEnrollment[]
+  imageUrl   String?           // URL de la imagen de la clase
 }
 
 model ClassEnrollment {
