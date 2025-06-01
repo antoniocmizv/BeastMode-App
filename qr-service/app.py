@@ -115,9 +115,9 @@ async def fetch_user_data(user_id: str, token: str) -> dict:
 
 def generate_qr_token(user_data: dict, gym_id: str) -> str:
     """Genera un token específico para el QR con expiración"""
-    now = get_utc_time()  # Usar UTC para JWT (estándar)
-    expires_at = now + timedelta(minutes=15)  # QR válido por 15 minutos
-    
+    now = get_utc_time().replace(second=0, microsecond=0)  
+    expires_at = now + timedelta(minutes=15)  
+
     qr_payload = {
         "user_id": user_data["id"],
         "user_name": user_data["name"],
@@ -126,7 +126,7 @@ def generate_qr_token(user_data: dict, gym_id: str) -> str:
         "iat": int(now.timestamp()),
         "type": "gym_access_qr"
     }
-    
+
     return jwt.encode(qr_payload, JWT_SECRET, algorithm="HS256")
 
 def create_qr_code(data: str) -> str:
