@@ -25,7 +25,7 @@ router.get('/gym/:gymId', getUserByGymId);
 router.get('/:id', getUserById);
 router.post('/', createUserValidator, validateRequest, createUser);
 router.post('/:id/avatar', authenticate, uploadAvatarMiddleware, uploadAvatar);
-router.put('/:id', authenticate, authorize('ADMIN'), updateUser);
+router.put('/:id', authenticate, updateUser);
 router.delete('/:id', authenticate, authorize('ADMIN'), deleteUser);
 
 export default router;

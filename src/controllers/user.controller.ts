@@ -3,6 +3,7 @@ import prisma from '../../lib/prisma';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import bcrypt from 'bcrypt';
 
 export const getUsers = async (_req: Request, res: Response) => {
   const users = await prisma.user.findMany();
@@ -83,11 +84,22 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
+  console.log('[DEBUG] Controlador updateUser ejecutado');
   const { id } = req.params;
   const { name, email, password, phone, role, gymId } = req.body;
+  
+  // Preparar los datos a actualizar
+  const updateData: any = { name, email, phone, role, gymId };
+  
+  // Si se proporciona una contraseña, encriptarla
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updateData.password = hashedPassword;
+  }
+  
   const user = await prisma.user.update({
     where: { id },
-    data: { name, email, password, phone, role, gymId },
+    data: updateData,
   });
   res.json(user);
 };
